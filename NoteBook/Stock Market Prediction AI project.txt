@@ -1,0 +1,155 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.linear_model import LinearRegression
+from sklearn.tree import DecisionTreeRegressor
+from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
+from sklearn.svm import SVR
+from sklearn.model_selection import train_test_split
+
+# Reading the CSV file from the local file system
+data = pd.read_csv('Download Data - STOCK_US_XNAS_NFLX.csv')
+
+# Displaying the first few rows of the dataset
+print(data.head())
+
+# Checking for any missing values in the dataset
+print(data.isnull().sum())
+
+# Converting the 'Volume' column to float by removing commas
+data['Volume'] = data['Volume'].str.replace(',', '').astype(float)
+
+# Selecting only numeric columns for correlation heatmap
+numeric_data = data[['Open', 'High', 'Low', 'Close', 'Volume']]
+
+# Plotting the correlation heatmap
+plt.figure(figsize=(17, 8))
+cor = sns.heatmap(numeric_data.corr(), annot=True, cmap='coolwarm')
+plt.title('Correlation Heatmap')
+plt.show()
+
+# Plotting pairplot for a quick overview of relationships
+sns.pairplot(numeric_data)
+plt.suptitle('Pairplot of Numeric Data', y=1.02)
+plt.show()
+
+# Selecting features (independent variables) and target (dependent variable)
+x = data[['High', 'Low', 'Close', 'Volume']]
+y = data['Open']
+
+# Displaying the first few rows of the features and target
+print(x.head())
+print('========================================')
+print(y.head())
+
+# Splitting the dataset into training and testing sets
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.1, random_state=0)
+
+# Initializing and fit the Linear Regression model
+LR = LinearRegression()
+LR.fit(x_train, y_train)
+print("Linear Regression Model Score on Test Data:", LR.score(x_test, y_test))
+
+# Plotting the predicted values vs. actual values for Linear Regression
+plt.figure(figsize=(14, 7))
+y_pred_LR = LR.predict(x_test)
+plt.plot(y_test.values, label='Actual Values', color='green')
+plt.plot(y_pred_LR, label='LR Predicted Values', color='red', linestyle='dashed')
+plt.xlabel('Index')
+plt.ylabel('Open')
+plt.title('Actual vs. Predicted Values (Linear Regression)')
+plt.legend()
+plt.show()
+
+# Initializing and fit the Decision Tree Regressor model
+DTR = DecisionTreeRegressor(random_state=0)
+DTR.fit(x_train, y_train)
+print("Decision Tree Model Score on Test Data:", DTR.score(x_test, y_test))
+
+# Plotting the predicted values vs. actual values for Decision Tree
+plt.figure(figsize=(14, 7))
+y_pred_DTR = DTR.predict(x_test)
+plt.plot(y_test.values, label='Actual Values', color='green')
+plt.plot(y_pred_DTR, label='DTR Predicted Values', color='blue', linestyle='dashed')
+plt.xlabel('Index')
+plt.ylabel('Open')
+plt.title('Actual vs. Predicted Values (Decision Tree)')
+plt.legend()
+plt.show()
+
+# Initializing and fit the Random Forest Regressor model
+RFR = RandomForestRegressor(random_state=0)
+RFR.fit(x_train, y_train)
+print("Random Forest Model Score on Test Data:", RFR.score(x_test, y_test))
+
+# Plotting the predicted values vs. actual values for Random Forest
+plt.figure(figsize=(14, 7))
+y_pred_RFR = RFR.predict(x_test)
+plt.plot(y_test.values, label='Actual Values', color='green')
+plt.plot(y_pred_RFR, label='RFR Predicted Values', color='purple', linestyle='dashed')
+plt.xlabel('Index')
+plt.ylabel('Open')
+plt.title('Actual vs. Predicted Values (Random Forest)')
+plt.legend()
+plt.show()
+
+# Initializing and fit the Gradient Boosting Regressor model
+GBR = GradientBoostingRegressor(random_state=0)
+GBR.fit(x_train, y_train)
+print("Gradient Boosting Model Score on Test Data:", GBR.score(x_test, y_test))
+
+# Plotting the predicted values vs. actual values for Gradient Boosting
+plt.figure(figsize=(14, 7))
+y_pred_GBR = GBR.predict(x_test)
+plt.plot(y_test.values, label='Actual Values', color='green')
+plt.plot(y_pred_GBR, label='GBR Predicted Values', color='orange', linestyle='dashed')
+plt.xlabel('Index')
+plt.ylabel('Open')
+plt.title('Actual vs. Predicted Values (Gradient Boosting)')
+plt.legend()
+plt.show()
+
+# Initializing and fit the Support Vector Regressor model
+SVR_model = SVR()
+SVR_model.fit(x_train, y_train)
+print("SVR Model Score on Test Data:", SVR_model.score(x_test, y_test))
+
+# Plotting the predicted values vs. actual values for SVR
+plt.figure(figsize=(14, 7))
+y_pred_SVR = SVR_model.predict(x_test)
+plt.plot(y_test.values, label='Actual Values', color='green')
+plt.plot(y_pred_SVR, label='SVR Predicted Values', color='brown', linestyle='dashed')
+plt.xlabel('Index')
+plt.ylabel('Open')
+plt.title('Actual vs. Predicted Values (SVR)')
+plt.legend()
+plt.show()
+
+# Testing data for prediction
+Test_data = [[47.37, 44.59, 46.61, 30826543.0]]
+prediction_LR = LR.predict(Test_data)
+prediction_DTR = DTR.predict(Test_data)
+prediction_RFR = RFR.predict(Test_data)
+prediction_GBR = GBR.predict(Test_data)
+prediction_SVR = SVR_model.predict(Test_data)
+
+# Printing the predictions
+print("Linear Regression Prediction for Test Data:", prediction_LR)
+print("Decision Tree Prediction for Test Data:", prediction_DTR)
+print("Random Forest Prediction for Test Data:", prediction_RFR)
+print("Gradient Boosting Prediction for Test Data:", prediction_GBR)
+print("SVR Prediction for Test Data:", prediction_SVR)
+
+# Plotting the predicted values vs. actual values for each model together
+plt.figure(figsize=(14, 7))
+plt.plot(y_test.values, label='Actual Values', color='green')
+plt.plot(y_pred_LR, label='LR Predicted Values', color='red', linestyle='dashed')
+plt.plot(y_pred_DTR, label='DTR Predicted Values', color='blue', linestyle='dashed')
+plt.plot(y_pred_RFR, label='RFR Predicted Values', color='purple', linestyle='dashed')
+plt.plot(y_pred_GBR, label='GBR Predicted Values', color='orange', linestyle='dashed')
+plt.plot(y_pred_SVR, label='SVR Predicted Values', color='brown', linestyle='dashed')
+plt.xlabel('Index')
+plt.ylabel('Open')
+plt.title('Actual vs. Predicted Values (All Models)')
+plt.legend()
+plt.show()
